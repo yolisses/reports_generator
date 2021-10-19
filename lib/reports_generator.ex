@@ -11,10 +11,19 @@ defmodule ReportsGenerator do
     end)
   end
 
+  def build_from_many(file_names) when not is_list(file_names) do
+    {:error, "Please provide a list of strings"}
+  end
+
   def build_from_many(file_names) do
-    file_names
-    |> Task.async_stream(&build/1)
-    |> Enum.reduce(get_accumulator(), fn {:ok, result}, report -> sum_reports(report, result) end)
+    result =
+      file_names
+      |> Task.async_stream(&build/1)
+      |> Enum.reduce(get_accumulator(), fn {:ok, result}, report ->
+        sum_reports(report, result)
+      end)
+
+    {:ok, result}
   end
 
   def sum_reports(%{foods: foods1, users: users1}, %{foods: foods2, users: users2}) do

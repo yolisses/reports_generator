@@ -33,6 +33,50 @@ defmodule ReportsGeneratorTest do
     end
   end
 
+  describe "build_from_many/1" do
+    test "when a file list is provided, builds the report" do
+      file_names = ["report_test.csv", "report_test.csv"]
+
+      expected =
+        {:ok,
+         %{
+           foods: %{
+             "açaí" => 2,
+             "churrasco" => 4,
+             "esfirra" => 6,
+             "hambúrguer" => 4,
+             "pizza" => 4
+           },
+           users: %{
+             "1" => 96,
+             "10" => 72,
+             "2" => 90,
+             "3" => 62,
+             "4" => 84,
+             "5" => 98,
+             "6" => 36,
+             "7" => 54,
+             "8" => 50,
+             "9" => 48
+           }
+         }}
+
+      response = ReportsGenerator.build_from_many(file_names)
+
+      assert response == expected
+    end
+
+    test "when a file list is not provided, returns a error" do
+      file_names = "massa"
+
+      expected = {:error, "Please provide a list of strings"}
+
+      response = ReportsGenerator.build_from_many(file_names)
+
+      assert response == expected
+    end
+  end
+
   describe "fetch_higher_cost/2" do
     test "when the option is :users, return the user who spent the the most" do
       file_name = "report_test.csv"
