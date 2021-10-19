@@ -3,12 +3,29 @@ defmodule ReportsGenerator do
 
   @options [:users, :foods]
 
-  def build(filename) do
-    filename
+  def build(file_name) do
+    file_name
     |> Parser.parse_file()
     |> Enum.reduce(get_accumulator(), fn line, acc ->
       sum_values(line, acc)
     end)
+  end
+
+  def build_from_many(file_names) do
+    file_names
+    |> Task.async_stream(&build/1)
+    |> Enum.reduce(get_accumulator(), fn {:ok, result}, report -> sum_reports(report, result) end)
+  end
+
+  def sum_reports(%{foods: foods1, users: users1}, %{foods: foods2, users: users2}) do
+    %{
+      foods: sum_maps_values(foods1, foods2),
+      users: sum_maps_values(users1, users2)
+    }
+  end
+
+  def sum_maps_values(map1, map2) do
+    Map.merge(map1, map2, fn _key, value1, value2 -> value1 + value2 end)
   end
 
   def get_accumulator do
