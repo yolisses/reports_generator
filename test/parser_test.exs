@@ -7,9 +7,10 @@ defmodule ReportsGenerator.ParserTest do
     test "parse the file" do
       file_name = "report_test.csv"
 
-      response = file_name
-      |> Parser.parse_file
-      |> Enum.map(& &1)
+      response =
+        file_name
+        |> Parser.parse_file()
+        |> Enum.map(& &1)
 
       expected_response = [
         ["1", "pizza", 48],
