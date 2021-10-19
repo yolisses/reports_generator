@@ -1,6 +1,8 @@
 defmodule ReportsGenerator do
   alias ReportsGenerator.Parser
 
+  @options [:users, :foods]
+
   def build(filename) do
     filename
     |> Parser.parse_file()
@@ -13,9 +15,11 @@ defmodule ReportsGenerator do
     %{users: %{}, foods: %{}}
   end
 
-  def fetch_higher_cost(report) do
-    Enum.max_by(report, fn {_key, value} -> value end)
+  def fetch_higher_cost(report, option) when option in @options do
+    {:ok, Enum.max_by(report[option], fn {_key, value} -> value end)}
   end
+
+  def fetch_higher_cost(_, _), do: {:error, "Invalid opiton!"}
 
   defp sum_values(
          [id, food_name, price],
